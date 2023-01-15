@@ -12,41 +12,42 @@ namespace markojudas_music
 {
     public partial class AddBand : Form
     {
-        static string nameOfBand;
-        static string imagePath;
-        static string nameOfAlbum;
-        static string pathOfAlbumCover;
-        private static Secret secret;
-        private static bool okToProceedToDB;
+        static string _nameOfBand;
+        static string _imagePath;
+        static string _nameOfAlbum;
+        static string _pathOfAlbumCover;
+        private static Secret _secret;
+        private static bool _okToProceedToDb;
 
         public AddBand()
         {
-            okToProceedToDB = true;
-            secret = new Secret();
+            _okToProceedToDb = true;
+            _secret = new Secret();
             InitializeComponent();
         }
 
         private void btnBandPhoto_Click(object sender, EventArgs e)
         {
-            //Getting the band-photo
-            string imgPath = "";
-            OpenFileDialog path = new OpenFileDialog();
-            path.Filter = "Image Files(*.JPEG;*.JPG;*.PNG;*.BMP)|*.JPEG;*.JPG;*.PNG;*.BMP";
-            DialogResult res = path.ShowDialog();
-
-            if (res == DialogResult.OK)
+            var path = new OpenFileDialog
             {
-                imgPath = path.FileName;
-                bandImagePath.Text = imgPath;
-            }
+                Filter = @"Image Files(*.JPEG;*.JPG;*.PNG;*.BMP)|*.JPEG;*.JPG;*.PNG;*.BMP"
+            };
+            var res = path.ShowDialog();
+
+            if (res != DialogResult.OK) return;
+            //Getting the band-photo
+            var imgPath = path.FileName;
+            bandImagePath.Text = imgPath;
 
         }
 
-        private void btnAlbumPhoto_Click(object sender, EventArgs e)
+        private void BtnAlbumPhoto_Click(object sender, EventArgs e)
         {
 
-            var path = new OpenFileDialog();
-            path.Filter = "Image Files(*.JPEG;*.JPG;*.PNG;*.BMP)|*.JPEG;*.JPG;*.PNG;*.BMP";
+            var path = new OpenFileDialog
+            {
+                Filter = @"Image Files(*.JPEG;*.JPG;*.PNG;*.BMP)|*.JPEG;*.JPG;*.PNG;*.BMP"
+            };
             var res = path.ShowDialog();
 
             if (res != DialogResult.OK) return;
@@ -54,29 +55,29 @@ namespace markojudas_music
             albumCoverImgPath.Text = imgPath;
         }
 
-        private void okBtn_Click(object sender, EventArgs e)
+        private void OkBtn_Click(object sender, EventArgs e)
         {
             if (bname.Text.Length <= 0 ||
                 aName.Text.Length <= 0 ||
                 bandImagePath.Text.Length <= 0 ||
                 albumCoverImgPath.Text.Length <= 0)
             {
-                MessageBox.Show("Add the fields", "error");
+                MessageBox.Show(@"Add the fields", @"error");
                 return;
             }
 
-            nameOfBand = bname.Text;
-            imagePath = bandImagePath.Text;
-            var getExtImgPath = imagePath.Split('.');
+            _nameOfBand = bname.Text;
+            _imagePath = bandImagePath.Text;
+            var getExtImgPath = _imagePath.Split('.');
             var extImagePath = getExtImgPath[getExtImgPath.Length - 1];
 
-            nameOfAlbum = aName.Text;
-            pathOfAlbumCover = albumCoverImgPath.Text;
-            var getExtAlbumPhotoPath = pathOfAlbumCover.Split('.');
+            _nameOfAlbum = aName.Text;
+            _pathOfAlbumCover = albumCoverImgPath.Text;
+            var getExtAlbumPhotoPath = _pathOfAlbumCover.Split('.');
             var extAlbumPath = getExtAlbumPhotoPath[getExtAlbumPhotoPath.Length - 1];
 
-            var editNameOfBand = nameOfBand.Replace(" ", "-");
-            var editNameOfAlbum = nameOfAlbum
+            var editNameOfBand = _nameOfBand.Replace(" ", "-");
+            var editNameOfAlbum = _nameOfAlbum
                 .Replace(" ", "-")
                 .Replace(",", "")
                 .Replace(":", "");
@@ -85,10 +86,10 @@ namespace markojudas_music
             var s3Client = new AmazonS3Client(new StoredProfileAWSCredentials("Music Uploader"), RegionEndpoint.USEast1);
 
             //Console.WriteLine(editNameOfBand.ToLower());
-            var BUCKETNAME = "markojudas-music";
+            const string bucketname = "markojudas-music";
 
-            UploadFileAsync(s3Client, BUCKETNAME, editNameOfBand.ToLower(), editNameOfAlbum.ToLower(), extImagePath, extAlbumPath);
-            UploadToDb(nameOfBand, nameOfAlbum, extImagePath, extAlbumPath);
+            UploadFileAsync(s3Client, bucketname, editNameOfBand.ToLower(), editNameOfAlbum.ToLower(), extImagePath, extAlbumPath);
+            UploadToDb(_nameOfBand, _nameOfAlbum, extImagePath, extAlbumPath);
 
             this.Close();
         }
@@ -100,7 +101,7 @@ namespace markojudas_music
             string extAlbum
         )
         {
-            if (!okToProceedToDB)
+            if (!_okToProceedToDb)
             {
                 return;
             }
@@ -111,28 +112,28 @@ namespace markojudas_music
                 .Replace(",", "")
                 .Replace(":", "");
 
-            var S3BUCKETPATH = Secret.S3Bucket;
+            var s3Bucketpath = Secret.S3Bucket;
 
-            var DBSTRING = Secret.ConnectionString;
+            var dbstring = Secret.ConnectionString;
 
-            if (S3BUCKETPATH == null || DBSTRING == null)
+            if (s3Bucketpath == null || dbstring == null)
             {
-                MessageBox.Show("Please Check the .env File", "Error Parsing Secrets");
+                MessageBox.Show(@"Please Check the .env File", @"Error Parsing Secrets");
                 return;
             }
 
-            var bandPath = S3BUCKETPATH +
+            var bandPath = s3Bucketpath +
                            editBandName +
                            "/band-photo/" +
                            editBandName + "." +
                            extBand;
-            var albumPath = S3BUCKETPATH +
+            var albumPath = s3Bucketpath +
                             editBandName +
                             "/albums/" +
                             editAlbumName + "." +
                             extAlbum;
 
-            var client = new MongoClient(DBSTRING);
+            var client = new MongoClient(dbstring);
             var db = client.GetDatabase("music-library");
             var collection = db.GetCollection<BsonDocument>("bands");
 
@@ -161,11 +162,11 @@ namespace markojudas_music
             }
             catch (MongoWriteException e)
             {
-                MessageBox.Show("Error Uploading Band: " + e, "Error");
+                MessageBox.Show(@"Error Uploading Band: " + e, @"Error");
                 return;
             }
 
-            MessageBox.Show("Uploaded Band!", "Success!");
+            MessageBox.Show(@"Uploaded Band!", @"Success!");
         }
 
         private static void UploadFileAsync(
@@ -179,16 +180,16 @@ namespace markojudas_music
 
             if (ExistsFile(client, bucketName, bandObjectName))
             {
-                MessageBox.Show("Band Already Here!", "ERROR");
-                okToProceedToDB = false;
+                MessageBox.Show(@"Band Already Here!", @"ERROR");
+                _okToProceedToDb = false;
                 return;
             }
 
-            okToProceedToDB = true;
+            _okToProceedToDb = true;
 
             //**** ADDING BAND PHOTO****
             var bandPhotoPathS3 = "Band/" + bandObjectName + "/band-photo/" + bandObjectName + "." + bandExt;
-            var bandPhotoFile = new FileInfo(imagePath);
+            var bandPhotoFile = new FileInfo(_imagePath);
 
 
             var request = new PutObjectRequest
@@ -201,18 +202,18 @@ namespace markojudas_music
             var response = client.PutObject(request);
             if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)
             {
-                Console.WriteLine("Added Band Photo");
+                Console.WriteLine(@"Added Band Photo");
             }
             else
             {
-                Console.WriteLine("Error uploading photos");
+                Console.WriteLine(@"Error uploading photos");
                 return;
             }
             //**************************
 
             //**** ADDING ALBUM PHOTO*****
             var albumPhotoPathS3 = "Band/" + bandObjectName + "/albums/" + albumObjectName + "." + albumExt;
-            var albumPhotoFile = new FileInfo(pathOfAlbumCover);
+            var albumPhotoFile = new FileInfo(_pathOfAlbumCover);
 
             var request2 = new PutObjectRequest
             {
@@ -222,36 +223,29 @@ namespace markojudas_music
             };
 
             var response2 = client.PutObject(request2);
-            if (response2.HttpStatusCode == System.Net.HttpStatusCode.OK)
-            {
-                Console.WriteLine("Succesfully Added Album Cover");
-            }
-            else
-            {
-                Console.WriteLine("Error uploading photos");
-            }
+            Console.WriteLine(response2.HttpStatusCode == System.Net.HttpStatusCode.OK
+                ? @"Successfully Added Album Cover"
+                : @"Error uploading photos");
             //*****************************
         }
 
-        public static bool ExistsFile(IAmazonS3 client, string bucketName, string bandName)
+        private static bool ExistsFile(IAmazonS3 client, string bucketName, string bandName)
         {
-            bool isFound = false;
+            var isFound = false;
 
-            ListObjectsRequest request = new ListObjectsRequest
+            var request = new ListObjectsRequest
             {
                 BucketName = bucketName,
                 Prefix = "Band/" + bandName
             };
             do
             {
-                ListObjectsResponse response = client.ListObjects(request);
-                foreach (S3Object obj in response.S3Objects)
+                var response = client.ListObjects(request);
+                foreach (var obj in response.S3Objects)
                 {
-                    if (obj.Key.Contains(bandName))
-                    {
-                        isFound = true;
-                        break;
-                    }
+                    if (!obj.Key.Contains(bandName)) continue;
+                    isFound = true;
+                    break;
                 }
 
                 if (response.IsTruncated)

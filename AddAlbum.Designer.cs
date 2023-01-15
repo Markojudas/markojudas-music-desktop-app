@@ -82,7 +82,7 @@
             this.addImage.TabIndex = 4;
             this.addImage.Text = "Add Image";
             this.addImage.UseVisualStyleBackColor = false;
-            this.addImage.Click += new System.EventHandler(this.addImage_Click);
+            this.addImage.Click += new System.EventHandler(this.AddImage_Click);
             // 
             // okBtn
             // 
@@ -93,7 +93,7 @@
             this.okBtn.TabIndex = 5;
             this.okBtn.Text = "OK";
             this.okBtn.UseVisualStyleBackColor = false;
-            this.okBtn.Click += new System.EventHandler(this.okBtn_Click);
+            this.okBtn.Click += new System.EventHandler(this.OkBtn_Click);
             // 
             // cnlBtn
             // 

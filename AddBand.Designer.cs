@@ -129,7 +129,7 @@
             this.btnAlbumPhoto.TabIndex = 9;
             this.btnAlbumPhoto.Text = "Add Image";
             this.btnAlbumPhoto.UseVisualStyleBackColor = false;
-            this.btnAlbumPhoto.Click += new System.EventHandler(this.btnAlbumPhoto_Click);
+            this.btnAlbumPhoto.Click += new System.EventHandler(this.BtnAlbumPhoto_Click);
             // 
             // okBtn
             // 
@@ -140,7 +140,7 @@
             this.okBtn.TabIndex = 10;
             this.okBtn.Text = "OK";
             this.okBtn.UseVisualStyleBackColor = false;
-            this.okBtn.Click += new System.EventHandler(this.okBtn_Click);
+            this.okBtn.Click += new System.EventHandler(this.OkBtn_Click);
             // 
             // cnlBtn
             // 

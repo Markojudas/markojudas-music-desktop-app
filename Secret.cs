@@ -29,7 +29,7 @@ namespace markojudas_music
 
             if (!File.Exists(getEnvFile))
             {
-                MessageBox.Show("Missing .env file with Secrets", "Error");
+                MessageBox.Show(@"Missing .env file with Secrets", @"Error");
                 return;
             }
 
@@ -37,7 +37,7 @@ namespace markojudas_music
 
             if (lines.Length == 0)
             {
-                MessageBox.Show("File is Empty", "Error");
+                MessageBox.Show(@"File is Empty", @"Error");
                 return;
             }
 
