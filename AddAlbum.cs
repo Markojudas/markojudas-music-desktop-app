@@ -57,7 +57,7 @@ namespace markojudas_music
             var getExt = albumCover.Split('.');
             var albumExt = getExt[1];
 
-            var S3BUCKETPATH = secret.s3Bucket;
+            var S3BUCKETPATH = Secret.S3Bucket;
 
             var aCoverPath = S3BUCKETPATH +
                              editedBandName +
@@ -66,7 +66,7 @@ namespace markojudas_music
                              "." +
                              albumExt;
 
-            var DBSTRING = secret.connectionString;
+            var DBSTRING = Secret.ConnectionString;
 
             var client = new MongoClient(DBSTRING);
             var db = client.GetDatabase("music-library");

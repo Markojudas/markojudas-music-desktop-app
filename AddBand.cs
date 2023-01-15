@@ -111,7 +111,7 @@ namespace markojudas_music
                 .Replace(",", "")
                 .Replace(":", "");
 
-            var S3BUCKETPATH = secret.s3Bucket;
+            var S3BUCKETPATH = Secret.S3Bucket;
 
             var bandPath = S3BUCKETPATH +
                            editBandName +
@@ -124,7 +124,7 @@ namespace markojudas_music
                             editAlbumName + "." +
                             extAlbum;
 
-            var DBSTRING = secret.connectionString;
+            var DBSTRING = Secret.ConnectionString;
 
             var client = new MongoClient(DBSTRING);
             var db = client.GetDatabase("music-library");
