@@ -59,6 +59,14 @@ namespace markojudas_music
 
             var S3BUCKETPATH = Secret.S3Bucket;
 
+            var DBSTRING = Secret.ConnectionString;
+
+            if (S3BUCKETPATH == null || DBSTRING == null)
+            {
+                MessageBox.Show("Please Check the .env File", "Error Parsing Secrets");
+                return;
+            }
+
             var aCoverPath = S3BUCKETPATH +
                              editedBandName +
                              "/albums/" +
@@ -66,7 +74,6 @@ namespace markojudas_music
                              "." +
                              albumExt;
 
-            var DBSTRING = Secret.ConnectionString;
 
             var client = new MongoClient(DBSTRING);
             var db = client.GetDatabase("music-library");
