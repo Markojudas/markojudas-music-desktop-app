@@ -21,6 +21,8 @@ namespace markojudas_music
                 ConnectionString = "mongodb+srv://" + DbUser + ":" + DbPw + "@" + DbCluster +
                                    "/?retryWrites=true&w=majority";
             }
+
+            Console.WriteLine(@"Connection String (modified split method): " + ConnectionString);
         }
 
         private static void SetSecrets()
@@ -43,9 +45,9 @@ namespace markojudas_music
 
             foreach (var line in lines)
             {
-                var parts = line.Split('=');
+                var parts = line.Split(new char[] { '=' }, 2);
 
-                if (parts.Length < 2) continue;
+                if (parts.Length != 2) continue;
 
                 switch (parts[0])
                 {
@@ -53,21 +55,7 @@ namespace markojudas_music
                         DbUser = parts[1];
                         break;
                     case "dbPW":
-                        if (parts.Length > 2)
-                        {
-                            DbPw = "";
-                            for (var i = 1; i < parts.Length; i++)
-                            {
-                                if (i != parts.Length - 1)
-                                {
-                                    DbPw += parts[i] + "=";
-                                }
-                                else
-                                {
-                                    DbPw += parts[i];
-                                }
-                            }
-                        }
+                        DbPw = parts[1];
                         break;
                     case "dbCluster":
                         DbCluster = parts[1];
