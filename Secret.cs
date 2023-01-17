@@ -21,8 +21,6 @@ namespace markojudas_music
                 ConnectionString = "mongodb+srv://" + DbUser + ":" + DbPw + "@" + DbCluster +
                                    "/?retryWrites=true&w=majority";
             }
-
-            Console.WriteLine(@"Connection String (modified split method): " + ConnectionString);
         }
 
         private static void SetSecrets()
